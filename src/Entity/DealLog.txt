@@ -1,0 +1,5 @@
+timestamp
+price
+stock_id
+# sell_portfolio_id
+# buy_portfolio_id

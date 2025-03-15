@@ -13,6 +13,7 @@ class Stock
     public function __construct()
     {
         $this->applications = new ArrayCollection();
+        $this->dealLogs = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -31,6 +32,12 @@ class Stock
      */
     #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'stock')]
     private Collection $applications;
+
+    /**
+     * @var Collection<int, DealLog>
+     */
+    #[ORM\OneToMany(targetEntity: DealLog::class, mappedBy: 'stock')]
+    private Collection $dealLogs;
 
     public function getId(): ?int
     {
@@ -82,6 +89,36 @@ class Stock
             // set the owning side to null (unless already changed)
             if ($application->getStock() === $this) {
                 $application->setStock(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DealLog>
+     */
+    public function getDealLogs(): Collection
+    {
+        return $this->dealLogs;
+    }
+
+    public function addDealLog(DealLog $dealLog): static
+    {
+        if (!$this->dealLogs->contains($dealLog)) {
+            $this->dealLogs->add($dealLog);
+            $dealLog->setStock($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDealLog(DealLog $dealLog): static
+    {
+        if ($this->dealLogs->removeElement($dealLog)) {
+            // set the owning side to null (unless already changed)
+            if ($dealLog->getStock() === $this) {
+                $dealLog->setStock(null);
             }
         }
 
