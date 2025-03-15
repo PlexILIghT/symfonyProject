@@ -6,6 +6,7 @@ use App\Entity\Application;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<Application>
@@ -15,45 +16,53 @@ class ApplicationRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Application::class);
+
     }
 
-    public function deleteApplication(Application $application): void
+    public function findAllByUser(UserInterface $user): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.portfolio IN (:portfolios)')
+            ->setParameter('portfolios', $user->getPortfolios())
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function saveApplication(Application $application): void
+    {
+        $this->getEntityManager()->persist($application);
+        $this->getEntityManager()->flush();
+    }
+
+    public function removeApplication(Application $application): void
     {
         $this->getEntityManager()->remove($application);
         $this->getEntityManager()->flush();
     }
 
-    public function editApplication(Application $application): void
+    public function saveChanges(): void
     {
-        $this->getEntityManager()->persist($application);
         $this->getEntityManager()->flush();
     }
 
     public function findAppropriate(Application $application): ?Application
     {
         return $this
-        ->createQueryBuilder('a')
-        ->where('a.stock_id = :stock_id')
-        ->andWhere('a.quantity = :quantity')
-        ->andWhere('a.price = :price')
-        ->andWhere('a.action = :action')
-        ->andWhere('a.user_id != user_id')
-        ->andWhere('a.porfolio_id NOT IN (:porfolios')
-        ->setParameters(new ArrayCollection([
-            'stock_id' => $application->getStock()->getId(),
-            'quantity' => $application->getQuantity(),
-            'price' => $application->getPrice(),
-            'action' => $application->getAction()->getOppositeAction()->value,
-            'user_id' => $application->getUser()->getId(),
-        ])
-        )
-        ->getQuery()
-        ->getOneOrNullResult()
-    ;
-    }
-
-    public function saveChanges() {
-
+            ->createQueryBuilder('a')
+            ->where('a.stock = :stock')
+            ->andWhere('a.quantity = :quantity')
+            ->andWhere('a.price = :price')
+            ->andWhere('a.action = :action')
+            ->andWhere('a.portfolio NOT IN (:portfolios)')
+            ->setParameter('stock', $application->getStock())
+            ->setParameter('quantity', $application->getQuantity())
+            ->setParameter('price', $application->getPrice())
+            ->setParameter('action', $application->getAction()->getOpposite())
+            ->setParameter('portfolios', $application->getPortfolio()->getUser()->getPortfolios())
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
     }
     //    /**
     //     * @return Application[] Returns an array of Application objects

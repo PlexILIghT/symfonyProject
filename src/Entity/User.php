@@ -40,10 +40,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Portfolio::class, mappedBy: 'user')]
     private Collection $portfolios;
-    
+
     public function __construct()
     {
         $this->portfolios = new ArrayCollection();
+    }
+
+    public function canCreatePortfolio(): bool
+    {
+        return count($this->portfolios) < 5;
     }
 
     public function getId(): ?int

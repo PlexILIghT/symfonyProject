@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\DepositaryRepository;
 use Doctrine\ORM\Mapping as ORM;
-use RuntimeException;
 
 #[ORM\Entity(repositoryClass: DepositaryRepository::class)]
 class Depositary
@@ -24,6 +23,10 @@ class Depositary
 
     #[ORM\Column]
     private ?int $quantity = null;
+
+    #[ORM\Column(name: 'freeze_quantity')]
+    private ?int $freezeQuantity = null;
+
 
     public function getId(): ?int
     {
@@ -68,15 +71,10 @@ class Depositary
 
     public function addQuantity(int $quantity): static
     {
-        if ($quantity <= 0) {
-            throw new RuntimeException('Quantity must ne greater than 0');
-        }
-
         $this->quantity += $quantity;
 
         return $this;
     }
-
 
     public function subQuantity(int $quantity): static
     {
@@ -84,4 +82,36 @@ class Depositary
 
         return $this;
     }
+
+    public function getFreezeQuantity(): ?int
+    {
+        return $this->freezeQuantity;
+    }
+
+    public function setFreezeQuantity(int $freezeQuantity): static
+    {
+        $this->freezeQuantity = $freezeQuantity;
+
+        return $this;
+    }
+
+    public function addFreezeQuantity(int $freezeQuantity): static
+    {
+        $this->freezeQuantity += $freezeQuantity;
+
+        return $this;
+    }
+
+    public function subFreezeQuantity(int $freezeQuantity): static
+    {
+        $this->freezeQuantity -= $freezeQuantity;
+
+        return $this;
+    }
+
+    public function getActualQuantity(): ?int
+    {
+        return $this->quantity - $this->freezeQuantity;
+    }
+
 }

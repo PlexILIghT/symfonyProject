@@ -16,6 +16,12 @@ class DepositaryRepository extends ServiceEntityRepository
         parent::__construct($registry, Depositary::class);
     }
 
+    public function removeDepositary(Depositary $depositary): void
+    {
+        $this->getEntityManager()->remove($depositary);
+        $this->getEntityManager()->flush();
+    }
+
     //    /**
     //     * @return Depositary[] Returns an array of Depositary objects
     //     */

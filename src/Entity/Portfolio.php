@@ -22,11 +22,17 @@ class Portfolio
     #[ORM\Column]
     private ?float $balance = null;
 
+    #[ORM\Column(name: 'freeze_balance')]
+    private ?float $freezeBalance = null;
+
     /**
      * @var Collection<int, Depositary>
      */
-    #[ORM\OneToMany(targetEntity: Depositary::class, mappedBy: 'portfolio')]
+    #[ORM\OneToMany(targetEntity: Depositary::class, mappedBy: 'portfolio', cascade: ['persist', 'remove'])]
     private Collection $depositaries;
+
+    #[ORM\Column(length: 63)]
+    private ?string $name = null;
 
     public function __construct()
     {
@@ -70,29 +76,52 @@ class Portfolio
         return $this->depositaries;
     }
 
+    public function addBalance(float $sum): static
+    {
+        $this->balance += $sum;
+
+        return $this;
+    }
+
+    public function subBalance(float $sum): static
+    {
+        $this->balance -= $sum;
+
+        return $this;
+    }
+
+    public function getDepositaryByStock(Stock $stock): ?Depositary
+    {
+        return $this->depositaries->findFirst(
+            function (int $key, Depositary $depositary) use ($stock) {
+                return $depositary->getStock()->getId() === $stock->getId();
+            }
+        );
+    }
+
+    public function addDepositaryQuantityByStock(Stock $stock, int $quantity): static
+    {
+        $depositary = $this->getDepositaryByStock($stock);
+
+        if (!$depositary) {
+            $depositary = (new Depositary())
+                ->setStock($stock)
+            ;
+
+            $this->addDepositary($depositary);
+        }
+
+        $depositary->addQuantity($quantity);
+
+        return $this;
+    }
+
     public function addDepositary(Depositary $depositary): static
     {
         if (!$this->depositaries->contains($depositary)) {
             $this->depositaries->add($depositary);
             $depositary->setPortfolio($this);
         }
-
-        return $this;
-    }
-
-    public function addDepositaryQuantityByStockId(Stock $stock, int $quantity): static
-    {
-        $depositary = $this->getDepositaries()->filter(function (Depositary $depositary) use ($stock) {
-            return $depositary?->getStock()->getId() === $stock?->getId();
-        }) -> first();
-
-        if ($depositary === null) {
-            $depositary = (new Depositary())
-                ->setStock($stock)
-                ->setPortfolio($this);
-        }
-
-        $depositary->addQuantity($quantity);
 
         return $this;
     }
@@ -107,5 +136,48 @@ class Portfolio
         }
 
         return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getFreezeBalance(): ?float
+    {
+        return $this->freezeBalance;
+    }
+
+    public function setFreezeBalance(float $freezeBalance): static
+    {
+        $this->freezeBalance = $freezeBalance;
+
+        return $this;
+    }
+
+    public function addFreezeBalance(float $sum): static
+    {
+        $this->freezeBalance += $sum;
+
+        return $this;
+    }
+
+    public function subFreezeBalance(float $sum): static
+    {
+        $this->freezeBalance -= $sum;
+
+        return $this;
+    }
+
+    public function getAvailableBalance(): ?float
+    {
+        return $this->balance - $this->freezeBalance;
     }
 }

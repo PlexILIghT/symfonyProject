@@ -16,7 +16,7 @@ class Application
 
     #[ORM\ManyToOne(inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?Portfolio $portfolio = null;
 
     #[ORM\ManyToOne(inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
@@ -36,9 +36,16 @@ class Application
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getPortfolio(): ?Portfolio
     {
-        return $this->user;
+        return $this->portfolio;
+    }
+
+    public function setPortfolio(?Portfolio $portfolio): static
+    {
+        $this->portfolio = $portfolio;
+
+        return $this;
     }
 
     public function setUser(?User $user): static
@@ -95,6 +102,9 @@ class Application
         return $this;
     }
 
-    
+    public function getTotal(): float
+    {
+        return $this->price * $this->quantity;
+    }
 
 }

@@ -18,6 +18,6 @@ class AdminController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return new Response('Роль ROLE_ADMIN добавлена для ' . $user->getUsername());
+        return new Response('Роль ROLE_ADMIN добавлена пользователю.');
     }
 }

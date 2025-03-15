@@ -1,20 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PortfolioController!{% endblock %}
+{% block title %}Portfolio index{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <h1>Portfolio index</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Balance</th>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for portfolio in portfolios %}
+            <tr>
+                <td>{{ portfolio.id }}</td>
+                <td>{{ portfolio.balance }}</td>
+                <td>{{ portfolio.name }}</td>
+                <td>{{ portfolio.user.username }}</td>
+                <td>
+                    <a href="{{ path('app_portfolio_show', {'id': portfolio.id, 'name': portfolio.name}) }}">show</a>
+                    <a href="{{ path('app_portfolio_edit', {'id': portfolio.id, 'name': portfolio.name}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/u200b/Documents/Github/first_symfony_project/src/Controller/PortfolioController.php</code></li>
-        <li>Your template at <code>/home/u200b/Documents/Github/first_symfony_project/templates/portfolio/index.html.twig</code></li>
-    </ul>
-</div>
+    <a href="{{ path('app_portfolio_new') }}">Create new</a>
 {% endblock %}

@@ -26,9 +26,9 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: apphello
+      MYSQL_DATABASE: stockdatabase
     ports:
-      - "3306:3306"
+      - "3307:3307"
     networks:
       - app-network
 
