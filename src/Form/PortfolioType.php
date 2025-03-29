@@ -19,7 +19,8 @@ class PortfolioType extends AbstractType
             ])
             ->add('balance', NumberType::class, [
                 'label' => 'Initial Balance',
-            ]);
+            ])
+            ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

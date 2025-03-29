@@ -8,6 +8,13 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DepositaryRepository::class)]
 class Depositary
 {
+
+    public function __construct()
+    {
+        $this->quantity = 0;
+        $this->freezeQuantity = 0;
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

@@ -16,12 +16,11 @@ use Symfony\Config\Security\AccessControlConfig;
  
 class GlassController extends AbstractController 
 { 
-    public function __construct(private readonly StockRepository $stockRepository,
-    private readonly UserRepository $userRepository,
-    private readonly ApplicationRepository $applicationRepository) 
-    { 
-         
-    } 
+    public function __construct(
+        private readonly StockRepository $stockRepository,
+        private readonly UserRepository $userRepository,
+        private readonly ApplicationRepository $applicationRepository
+    ) {}
     #[Route('/glass/stock/{stockId}', name: 'app_stock_glass', methods: ['GET'])] 
     public function getStockGlass(int $stockId): Response 
     { 

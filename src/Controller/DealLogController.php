@@ -10,10 +10,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DealLogController extends AbstractController
 {
-    public function __construct(private readonly DealLogRepository $dealLogRepository)
-    {
+    public function __construct(
+        private readonly DealLogRepository $dealLogRepository
+    ) {}
 
-    }
     #[Route('/deal/log/{id}', name: 'app_deal_log')]
     public function index(Stock $stock): Response
     {

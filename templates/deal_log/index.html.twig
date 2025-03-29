@@ -3,12 +3,22 @@
 {% block title %}Deal Logs for Stock {{ stock.name }}{% endblock %}
 
 {% block body %}
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src=" {{ asset("javascript/mychart.js") }}"></script>
 
-<div>
-    {% for dealLog in dealLogs %}
-            <div>
-                    <h2>{{ dealLog.timestamp|date("d/m/Y H:i:s") }}, {{ dealLog.price }}</h2>
-            </div>
-    {% endfor %}
-</div>
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('myChart');
+        renderChart(
+            ctx,
+            {{ dealLogs|map(dl => dl.timestamp|date("d/m/Y H:i:s"))|json_encode|raw }},
+            {{ dealLogs|map(dl => dl.price)|json_encode }}
+        );
+    </script>
 {% endblock %}
+{% endblock %}
+

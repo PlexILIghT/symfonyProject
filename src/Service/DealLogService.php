@@ -6,27 +6,26 @@ use App\Entity\Application;
 use App\Entity\DealLog;
 use App\Enums\ActionEnum;
 use App\Repository\DealLogRepository;
+use DateTimeImmutable;
 
 class DealLogService
 {
-    public function __construct(
-        private readonly DealLogRepository $dealLogRepository
-    ) {
+    public function __construct(private readonly DealLogRepository $dealLogRepository)
+    {
+
     }
 
-    public function registerDealLog(Application $buyApplication, Application $sellApplication): DealLog
+    public function registerDealLog(Application $buyApplication) : void
     {
-        if ($buyApplication->getAction() === ActionEnum::SELL) {
-            return $this->registerDealLog($sellApplication, $buyApplication);
-        }
+        $price = $buyApplication->getPrice();
+        $stock = $buyApplication->getStock();
+        $timestamp = new DateTimeImmutable("now UTC");
 
-        $dealLog = (new DealLog())
-            ->setStock($buyApplication->getStock())
-            ->setPrice($buyApplication->getPrice()) // min($buyApplication->getPrice(), $sellApplication->getPrice()) для "комплесных" сделок
-        ;
+        $dealLog = new DealLog();
+        $dealLog->setPrice($price);
+        $dealLog->setTimestamp($timestamp);
+        $dealLog->setStock($stock);
 
         $this->dealLogRepository->saveDealLog($dealLog);
-        $dealLog->getTimestamp()->format();
-        return $dealLog;
     }
 }
