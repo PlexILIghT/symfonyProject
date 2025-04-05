@@ -24,7 +24,6 @@
             <p class="empty-message">You do not have any portfolios yet :(</p>
         {% else %}
             <h2>You have {{ user.getPortfolios().count() }} portfolios:</h2>
-
             <div class="portfolio-list">
                 {% for portfolio in user.getPortfolios() %}
                     <div class="portfolio-card">
@@ -39,6 +38,7 @@
                             <ul class="stocks-list">
                                 {% for depo in portfolio.depositaries %}
                                     <li>{{ depo.quantity }} of {{ depo.stock.name }} ({{ depo.stock.ticker }})</li>
+                                    <li>Delta: {{ delta(depo) }}</li>
                                 {% endfor %}
                             </ul>
                         {% endif %}

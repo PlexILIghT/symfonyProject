@@ -31,6 +31,9 @@ class DealLog
     #[ORM\JoinColumn(nullable: false)]
     private ?Portfolio $buyPorfolio = null;
 
+    #[ORM\Column]
+    private ?int $quantity = null;
+
     public function __construct()
     {
         $this->timestamp = new \DateTimeImmutable('now');
@@ -97,6 +100,18 @@ class DealLog
     public function setBuyPorfolio(?Portfolio $buyPorfolio): static
     {
         $this->buyPorfolio = $buyPorfolio;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): static
+    {
+        $this->quantity = $quantity;
 
         return $this;
     }
