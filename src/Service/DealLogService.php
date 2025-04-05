@@ -15,7 +15,7 @@ class DealLogService
 
     }
 
-    public function registerDealLog(Application $buyApplication) : void
+    public function registerDealLog(Application $buyApplication, Application $sellApplication): void
     {
         $price = $buyApplication->getPrice();
         $stock = $buyApplication->getStock();
@@ -25,6 +25,8 @@ class DealLogService
         $dealLog->setPrice($price);
         $dealLog->setTimestamp($timestamp);
         $dealLog->setStock($stock);
+        $dealLog->setBuyPorfolio($buyApplication->getPortfolio());
+        $dealLog->setSellPortfolio($sellApplication->getPortfolio());
 
         $this->dealLogRepository->saveDealLog($dealLog);
     }

@@ -20,6 +20,7 @@ final class ApplicationController extends AbstractController
     public function __construct(
         private readonly FreezeService $freezeService,
         private readonly DealService   $dealService,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
 
     #[Route(name: 'app_application_index', methods: ['GET'])]
@@ -41,16 +42,16 @@ final class ApplicationController extends AbstractController
     }
 
     #[Route('/new', name: 'app_application_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
         $application = new Application();
         $form = $this->createForm(ApplicationType::class, $application);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($application);
+            $this->entityManager->persist($application);
             $this->freezeService->freezeByApplication($application);
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->dealService->executeDeal($application);
 
@@ -72,7 +73,7 @@ final class ApplicationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_application_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Application $application, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Application $application): Response
     {
         $oldQuantity = $application->getQuantity();
         $oldPrice = $application->getPrice();
@@ -84,7 +85,7 @@ final class ApplicationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->freezeService->updateFreezeByApplication($application, $oldQuantity, $oldPrice);
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->dealService->executeDeal($application);
 
@@ -98,12 +99,12 @@ final class ApplicationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_application_delete', methods: ['POST'])]
-    public function delete(Request $request, Application $application, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Application $application): Response
     {
         if ($this->isCsrfTokenValid('delete' . $application->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($application);
+            $this->entityManager->remove($application);
             $this->freezeService->unfreezeByApplication($application);
-            $entityManager->flush();
+            $this->entityManager->flush();
         }
 
         return $this->redirectToRoute('app_application_index', [], Response::HTTP_SEE_OTHER);
