@@ -11,26 +11,27 @@ use DateTimeImmutable;
 
 class DealLogService
 {
-    public function __construct(private readonly DealLogRepository $dealLogRepository)
+    public function __construct(
+        private readonly DealLogRepository $dealLogRepository
+    ) {}
+
+    public function registerDealLog(Application $buyApplication, Application $sellApplication): DealLog
     {
+        if ($buyApplication->getAction() === ActionEnum::SELL) {
+            return $this->registerDealLog($sellApplication, $buyApplication);
+        }
 
-    }
-
-    public function registerDealLog(Application $buyApplication, Application $sellApplication): void
-    {
-        $price = $buyApplication->getPrice();
-        $stock = $buyApplication->getStock();
-        $timestamp = new DateTimeImmutable("now UTC");
-
-        $dealLog = new DealLog();
-        $dealLog->setPrice($price);
-        $dealLog->setTimestamp($timestamp);
-        $dealLog->setStock($stock);
-        $dealLog->setBuyPorfolio($buyApplication->getPortfolio());
-        $dealLog->setSellPortfolio($sellApplication->getPortfolio());
-        $dealLog->setQuantity($buyApplication->getQuantity());
+        $dealLog = (new DealLog())
+            ->setStock($buyApplication->getStock())
+            ->setPrice($buyApplication->getPrice()) // min($buyApplication->getPrice(), $sellApplication->getPrice()) для "комплесных" сделок
+            ->setBuyPortfolio($buyApplication->getPortfolio())
+            ->setSellPortfolio($sellApplication->getPortfolio())
+            ->setQuantity($buyApplication->getQuantity()) // min($buyApplication->getQuantity(), $sellApplication->getQuantity()) для "комплесных" сделок
+        ;
 
         $this->dealLogRepository->saveDealLog($dealLog);
+
+        return $dealLog;
     }
 
     public function calculateDelta(Depositary $depositary): float

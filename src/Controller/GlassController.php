@@ -21,7 +21,7 @@ class GlassController extends AbstractController
         private readonly UserRepository $userRepository,
         private readonly ApplicationRepository $applicationRepository
     ) {}
-    #[Route('/glass/stock/{stockId}', name: 'app_stock_glass', methods: ['GET'])] 
+    #[Route('/glass/stock/{stockId}', name: 'app_stock_glass', methods: ['GET'])]
     public function getStockGlass(int $stockId): Response 
     { 
         $stock= $this-> stockRepository -> findById($stockId); 
@@ -79,7 +79,7 @@ class GlassController extends AbstractController
         return new Response('OK', Response::HTTP_ACCEPTED);
     }
 
-    #[Route('glass/stock/{stockId', name:'app_stock_glass_delete_application', methods: ['DELETE'])]
+    #[Route('glass/stock/{stockId}', name:'app_stock_glass_delete_application', methods: ['DELETE'])]
     public function removeApplication(int $stockId, Request $request): Response
     {
         $applicationId = $request->getPayload()->get('application_id');

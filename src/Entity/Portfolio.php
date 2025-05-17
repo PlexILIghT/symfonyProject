@@ -25,14 +25,14 @@ class Portfolio
     #[ORM\Column(name: 'freeze_balance')]
     private ?float $freezeBalance = null;
 
+    #[ORM\Column(length: 63)]
+    private ?string $name = null;
+
     /**
      * @var Collection<int, Depositary>
      */
     #[ORM\OneToMany(targetEntity: Depositary::class, mappedBy: 'portfolio', cascade: ['persist', 'remove'])]
     private Collection $depositaries;
-
-    #[ORM\Column(length: 63)]
-    private ?string $name = null;
 
     /**
      * @var Collection<int, DealLog>
@@ -43,7 +43,7 @@ class Portfolio
     /**
      * @var Collection<int, DealLog>
      */
-    #[ORM\OneToMany(targetEntity: DealLog::class, mappedBy: 'buyPorfolio')]
+    #[ORM\OneToMany(targetEntity: DealLog::class, mappedBy: 'buyPortfolio')]
     private Collection $buyDealLogs;
 
     public function __construct()
@@ -237,7 +237,7 @@ class Portfolio
     {
         if (!$this->buyDealLogs->contains($buyDealLog)) {
             $this->buyDealLogs->add($buyDealLog);
-            $buyDealLog->setBuyPorfolio($this);
+            $buyDealLog->setBuyPortfolio($this);
         }
 
         return $this;
@@ -247,8 +247,8 @@ class Portfolio
     {
         if ($this->buyDealLogs->removeElement($buyDealLog)) {
             // set the owning side to null (unless already changed)
-            if ($buyDealLog->getBuyPorfolio() === $this) {
-                $buyDealLog->setBuyPorfolio(null);
+            if ($buyDealLog->getBuyPortfolio() === $this) {
+                $buyDealLog->setBuyPortfolio(null);
             }
         }
 

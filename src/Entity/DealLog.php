@@ -29,7 +29,7 @@ class DealLog
 
     #[ORM\ManyToOne(inversedBy: 'buyDealLogs')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Portfolio $buyPorfolio = null;
+    private ?Portfolio $buyPortfolio = null;
 
     #[ORM\Column]
     private ?int $quantity = null;
@@ -92,14 +92,14 @@ class DealLog
         return $this;
     }
 
-    public function getBuyPorfolio(): ?Portfolio
+    public function getBuyPortfolio(): ?Portfolio
     {
-        return $this->buyPorfolio;
+        return $this->buyPortfolio;
     }
 
-    public function setBuyPorfolio(?Portfolio $buyPorfolio): static
+    public function setBuyPortfolio(?Portfolio $buyPortfolio): static
     {
-        $this->buyPorfolio = $buyPorfolio;
+        $this->buyPortfolio = $buyPortfolio;
 
         return $this;
     }
