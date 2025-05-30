@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Deposit{% endblock %}
+
+{% block body %}
+    {% for deposit in deposits %}
+        <span>{{ deposit.description }} we had rate {{ deposit.rate }} that could have been fixated on {{ deposit.publicationMonth }} </span>
+        <br>
+    {% endfor %}
+{% endblock %}
