@@ -33,7 +33,7 @@ class PortfolioFixture extends AbstractFixture implements DependentFixtureInterf
         $userPortfolio->setName("User Portfolio");
         $userPortfolio->setBalance(100);
         $userPortfolio->setFreezeBalance(0);
-        $userPortfolio->setUser($this->getReference(UserFixture::USER_ADMIN_REFERENCE, User::class));
+        $userPortfolio->setUser($this->getReference(UserFixture::USER_USER_REFERENCE, User::class));
 
         $manager->persist($userPortfolio);
 

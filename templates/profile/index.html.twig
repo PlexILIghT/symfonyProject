@@ -10,8 +10,9 @@
 
     <div class="container">
         <div class="profile-header">
-            <h1>Welcome, {{ user.username }}!</h1>
+            <h2>Welcome, {{ user.username }}!</h2>
         </div>
+            <h2 class="test">W, {{ user.username }}</h2>
 
         {% set count = 0 %}
         {% for portfolio in user.portfolios %}

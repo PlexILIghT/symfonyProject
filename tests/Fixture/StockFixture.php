@@ -27,9 +27,9 @@ class StockFixture extends AbstractFixture
         $anotherStock->setName('Another Test Stock');
         $anotherStock->setTicker('ATS');
 
-        $manager->persist($anotherStock);
 
         $this->addReference(self::ANOTHER_STOCK_REFERENCE, $anotherStock);
+        $manager->persist($anotherStock);
         $manager->flush();
     }
 }
