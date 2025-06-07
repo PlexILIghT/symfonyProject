@@ -10,6 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PortfolioRepository::class)]
 class Portfolio
 {
+    public function __construct()
+    {
+        $this->depositaries = new ArrayCollection();
+        $this->sellDealLogs = new ArrayCollection();
+        $this->buyDealLogs = new ArrayCollection();
+        $this->freezeBalance = 0.0;
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -23,7 +31,7 @@ class Portfolio
     private ?float $balance = null;
 
     #[ORM\Column(name: 'freeze_balance')]
-    private ?float $freezeBalance = null;
+    private ?float $freezeBalance;
 
     #[ORM\Column(length: 63)]
     private ?string $name = null;
@@ -45,13 +53,6 @@ class Portfolio
      */
     #[ORM\OneToMany(targetEntity: DealLog::class, mappedBy: 'buyPortfolio')]
     private Collection $buyDealLogs;
-
-    public function __construct()
-    {
-        $this->depositaries = new ArrayCollection();
-        $this->sellDealLogs = new ArrayCollection();
-        $this->buyDealLogs = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
