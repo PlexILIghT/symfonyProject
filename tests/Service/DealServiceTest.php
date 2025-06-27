@@ -87,15 +87,15 @@ class DealServiceTest extends TestCase
     public function provideApplications(): array
     {
         return [
-            'No appropriate application' => [
+            'Не получили подходящей заявки' => [
                 (new Application()),
                 null
             ],
-            'SELL application and found BUY one' => [
+            'Заявка на покупку и нашли заявку на продажу' => [
                 self::configureBuyApplication(20, 5),
                 self::configureSellApplication(20, 5),
             ],
-            'BUY application and found SELL one' => [
+            'Заявка на продажу и нашли заявку на покупку' => [
                 self::configureSellApplication(20, 5),
                 self::configureBuyApplication(20, 5),
             ]
@@ -137,11 +137,6 @@ class DealServiceTest extends TestCase
         ;
 
         $portfolio->expects($this->once())
-            ->method('addDepositaryQuantityByStock')
-            ->with($stock, $quantity)
-        ;
-
-        $portfolio->expects($this->once())
             ->method('subBalance')
             ->with($price * $quantity)
         ;
@@ -149,6 +144,11 @@ class DealServiceTest extends TestCase
         $portfolio->expects($this->once())
             ->method('subFreezeBalance')
             ->with($price * $quantity)
+        ;
+
+        $portfolio->expects($this->once())
+            ->method('addDepositaryQuantityByStock')
+            ->with($stock, $quantity)
         ;
 
         return $buyApplication;

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Portfolio;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Tests\Fixture\PortfolioFixture;
@@ -23,48 +24,36 @@ class ProfileControllerTest extends WebTestCase
     {
         $this->client = static::createClient();
 
-        /**
-         * @var EntityManagerInterface $em
-         */
+        /** @var EntityManagerInterface $em */
         $em = $this->client->getContainer()->get('doctrine.orm.entity_manager');
 
         $loader = new Loader();
         $loader->addFixture(new UserFixture());
-        $loader->addFixture(new PortfolioFixture());
+        $loader->addFixture($this->portfolioFixture = new PortfolioFixture());
 
         $this->executor = new ORMExecutor($em, new ORMPurger());
         $this->executor->execute($loader->getFixtures());
-
-
     }
 
-    public function testSomething(): void
+    protected function tearDown(): void
     {
-        /**
-         * @var UserRepository $userRepository
-         */
-        $userRepository = $this->client->getContainer()->get(UserRepository::class);
+        $this->executor->getPurger()->purge();
+    }
 
-        /**
-         * @var UserRepository
-         */
+    public function testProfile(): void
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->client->getContainer()->get(UserRepository::class);
+        /** @var User $userAdmin */
         $userAdmin = $userRepository->findOneBy(['username' => 'admin']);
 
         $this->client->loginUser($userAdmin);
 
         $crawler = $this->client->request('GET', '/profile');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(1, $crawler->filter('h1'));
         $this->assertPageTitleSame('Stock Exchange - Profile');
-        $this->assertSelectorTextSame('h2', "Welcome, {$userAdmin->getUsername()}!");
-        $this->assertSelectorTextSame('test', "W, {$userAdmin->getUsername()}");
-        //$this->assertSelectorTextContains('p[class=',);
-
-        //$this->portfolioFixture->getReference(PortfolioFixture::PORTFOLIO_ADMIN_REFERENCE, PortfolioFixture::class);
-        //$this->assertSelectorTextContains();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->executor->purge();
-        parent::tearDown();
+        $this->assertAnySelectorTextSame('h2', "Welcome, {$userAdmin->getUsername()}!");
     }
 }

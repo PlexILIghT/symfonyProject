@@ -11,24 +11,27 @@ use PHPUnit\Framework\TestCase;
 class HelloServiceTest extends TestCase
 {
     private HelloRepository|MockObject $helloRepository;
-
     private HelloService $helloService;
-
     protected function setUp(): void
     {
         $this->helloRepository = $this->createMock(HelloRepository::class);
-        $this->helloService = new HelloService($this->helloRepository);
+
+        $this->helloService = new HelloService(
+            $this->helloRepository
+        );
     }
 
-    public function testGenerateLuckyNumber(): void
-    {
-        $expectedLuckyNumber = '1234';
-        $helloObject = $this->createMock(Hello::class);
 
+    /**
+     * @dataProvider provideLuckyNumbers
+     */
+    public function testGenerateLuckyNumber(string $expectedLuckyNumber): void
+    {
+        $helloObject = $this->createMock(Hello::class);
         $helloObject
             ->expects($this->once())
             ->method('getLuckyNumber')
-            ->willReturn($expectedLuckyNumber);
+            ->willReturn($expectedLuckyNumber)
         ;
 
         $this->helloRepository
@@ -38,6 +41,18 @@ class HelloServiceTest extends TestCase
         ;
 
         $actualLuckyNumber = $this->helloService->generateLuckyNumber();
-        $this->assertEquals($expectedLuckyNumber, $actualLuckyNumber);
-        }
+        $this->assertEquals(
+            $expectedLuckyNumber,
+            $actualLuckyNumber
+        );
+    }
+
+    public static function provideLuckyNumbers(): array
+    {
+        return [
+            'Один' => ['1'],
+            'Два' => ['2'],
+            'Три' => ['3']
+        ];
+    }
 }

@@ -5,21 +5,17 @@ namespace App\Tests\Fixture;
 use App\Entity\User;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 
 class UserFixture extends AbstractFixture
 {
     public const USER_ADMIN_REFERENCE = 'user-admin';
     public const USER_USER_REFERENCE = 'user-user';
-    /**
-     * @inheritDoc
-     */
     public function load(ObjectManager $manager): void
     {
         $userAdmin = new User();
         $userAdmin->setUsername('admin');
-        $userAdmin->setPassword('admin'); # +0.5 за хэшинг
-        $userAdmin->setRoles(['ROLE_ADMIN']);
+        $userAdmin->setPassword('admin_password'); # +0.5 балла за использование PasswordHasher
+        $userAdmin->setRoles(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']);
 
         $manager->persist($userAdmin);
 
@@ -27,7 +23,7 @@ class UserFixture extends AbstractFixture
 
         $user = new User();
         $user->setUsername('user');
-        $user->setPassword('user');
+        $user->setPassword('user_password');
 
         $manager->persist($user);
         $manager->flush();

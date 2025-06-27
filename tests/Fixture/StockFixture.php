@@ -8,28 +8,25 @@ use Doctrine\Persistence\ObjectManager;
 
 class StockFixture extends AbstractFixture
 {
-    public const TEST_STOCK_REFERENCE = 'test-stock';
-    public const ANOTHER_STOCK_REFERENCE = 'another-stock';
-    /**
-     * @inheritDoc
-     */
+    public const STOCK_TEST_REFERENCE = 'stock-test';
+    public const STOCK_ANOTHER_REFERENCE = 'stock-another';
     public function load(ObjectManager $manager): void
     {
         $testStock = new Stock();
-        $testStock->setName('Test Stock');
-        $testStock->setTicker('TSTCK');
+        $testStock->setName('Test stock');
+        $testStock->setTicker('TST');
 
         $manager->persist($testStock);
 
-        $this->addReference(self::TEST_STOCK_REFERENCE, $testStock);
+        $this->addReference(self::STOCK_TEST_REFERENCE, $testStock);
 
         $anotherStock = new Stock();
-        $anotherStock->setName('Another Test Stock');
-        $anotherStock->setTicker('ATS');
+        $anotherStock->setName('Another stock');
+        $anotherStock->setTicker('ANS');
 
-
-        $this->addReference(self::ANOTHER_STOCK_REFERENCE, $anotherStock);
+        $this->addReference(self::STOCK_ANOTHER_REFERENCE, $anotherStock);
         $manager->persist($anotherStock);
+
         $manager->flush();
     }
 }

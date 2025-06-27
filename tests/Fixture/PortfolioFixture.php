@@ -6,23 +6,18 @@ use App\Entity\Portfolio;
 use App\Entity\User;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class PortfolioFixture extends AbstractFixture implements DependentFixtureInterface
+class   PortfolioFixture extends AbstractFixture implements DependentFixtureInterface
 {
     public const PORTFOLIO_ADMIN_REFERENCE = 'portfolio-admin';
     public const PORTFOLIO_USER_REFERENCE = 'portfolio-user';
-
-    /**
-     * @inheritDoc
-     */
     public function load(ObjectManager $manager): void
     {
         $adminPortfolio = new Portfolio();
-        $adminPortfolio->setName("Admin Portfolio");
         $adminPortfolio->setBalance(100);
         $adminPortfolio->setFreezeBalance(0);
+        $adminPortfolio->setName("test");
         $adminPortfolio->setUser($this->getReference(UserFixture::USER_ADMIN_REFERENCE, User::class));
 
         $manager->persist($adminPortfolio);
@@ -30,11 +25,10 @@ class PortfolioFixture extends AbstractFixture implements DependentFixtureInterf
         $this->addReference(self::PORTFOLIO_ADMIN_REFERENCE, $adminPortfolio);
 
         $userPortfolio = new Portfolio();
-        $userPortfolio->setName("User Portfolio");
         $userPortfolio->setBalance(100);
         $userPortfolio->setFreezeBalance(0);
+        $userPortfolio->setName("test");
         $userPortfolio->setUser($this->getReference(UserFixture::USER_USER_REFERENCE, User::class));
-
         $manager->persist($userPortfolio);
 
         $this->addReference(self::PORTFOLIO_USER_REFERENCE, $userPortfolio);

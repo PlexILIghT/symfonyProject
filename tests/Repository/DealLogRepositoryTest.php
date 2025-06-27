@@ -5,35 +5,31 @@ namespace App\Tests\Repository;
 use App\Entity\DealLog;
 use App\Entity\Stock;
 use App\Repository\DealLogRepository;
-use App\Tests\Fixture\ApplicationFixture;
 use App\Tests\Fixture\DealLogFixture;
 use App\Tests\Fixture\PortfolioFixture;
 use App\Tests\Fixture\StockFixture;
-use App\Tests\Fixture\UserFixture;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class DealLogRepositoryTest extends KernelTestCase
 {
-    private ApplicationFixture $applicationFixture;
+    private StockFixture $stockFixture;
     private PortfolioFixture $portfolioFixture;
     private DealLogFixture $dealLogFixture;
-    private StockFixture $stockFixture;
-    private DealLogRepository $dealLogRepository;
+
     private ORMExecutor $executor;
 
+    private DealLogRepository $dealLogRepository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $kernel = self::bootKernel();
 
         $this->assertSame('test', $kernel->getEnvironment());
-
-        $em = self::getContainer()->get('doctrine')->getManager();
+        $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
         $this->assertInstanceOf(EntityManager::class, $em);
 
         $loader = new Loader();
@@ -41,16 +37,20 @@ class DealLogRepositoryTest extends KernelTestCase
         $loader->addFixture($this->portfolioFixture = new PortfolioFixture());
         $loader->addFixture($this->dealLogFixture = new DealLogFixture());
 
-        $this->executor = new ORMExecutor($em, new ORMPurger());
+        $this->executor = (new ORMExecutor($em, new ORMPurger()));
         $this->executor->execute($loader->getFixtures());
-
 
         $this->dealLogRepository = $em->getRepository(DealLog::class);
     }
 
+    protected function tearDown(): void
+    {
+        $this->executor->getPurger()->purge();
+    }
+
     public function testFindByStock(): void
     {
-        $findableStock = $this->stockFixture->getReference(StockFixture::TEST_STOCK_REFERENCE, Stock::class);
+        $findableStock = $this->stockFixture->getReference(StockFixture::STOCK_TEST_REFERENCE, Stock::class);
         $dealLogs = $this->dealLogRepository->findByStock($findableStock);
 
         $this->assertCount(2, $dealLogs);
@@ -59,38 +59,32 @@ class DealLogRepositoryTest extends KernelTestCase
         }
     }
 
-    public function testFindLatestByStock(): void
-    {
-        $findableStock = $this->stockFixture->getReference(StockFixture::TEST_STOCK_REFERENCE, Stock::class);
-        $latestDealLog = $this->dealLogRepository->findLatestByStock($findableStock);
-
-        $this->assertEquals(
-            $this->dealLogFixture->getReference(DealLogFixture::NEW_DEAL_LOG, DealLog::class),
-            $latestDealLog
-        );
-    }
-
     public function testNotFoundByStock(): void
     {
         $dealLogs = $this->dealLogRepository->findByStock(
-            $this->stockFixture->getReference(StockFixture::ANOTHER_STOCK_REFERENCE, Stock::class),
+            $this->stockFixture->getReference(StockFixture::STOCK_ANOTHER_REFERENCE, Stock::class),
         );
 
         $this->assertEmpty($dealLogs);
     }
 
-    public function testLatestByStockNotFound(): void
+    public function testFindLatestByStock(): void
     {
-        $this->assertNull(
-            $this->dealLogRepository->findLatestByStock(
-                $this->stockFixture->getReference(StockFixture::ANOTHER_STOCK_REFERENCE, Stock::class),
-            )
+        $findableStock = $this->stockFixture->getReference(StockFixture::STOCK_TEST_REFERENCE, Stock::class);
+
+        $latestDealLog = $this->dealLogRepository->findLatestByStock($findableStock);
+        $this->assertEquals(
+            $this->dealLogFixture->getReference(DealLogFixture::NEWER_DEAL_LOG, DealLog::class),
+            $latestDealLog
         );
     }
 
-    protected function tearDown(): void
+    public function testFindLatestByStockNotFound(): void
     {
-        $this->executor->purge();
-        parent::tearDown();
+        $this->assertNull(
+            $this->dealLogRepository->findLatestByStock(
+                $this->stockFixture->getReference(StockFixture::STOCK_ANOTHER_REFERENCE, Stock::class),
+            )
+        );
     }
 }

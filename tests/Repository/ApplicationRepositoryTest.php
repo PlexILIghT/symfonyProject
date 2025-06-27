@@ -17,18 +17,17 @@ use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 
 class ApplicationRepositoryTest extends KernelTestCase
 {
-    private ApplicationFixture $applicationFixture;
     private UserFixture $userFixture;
     private StockFixture $stockFixture;
     private PortfolioFixture $portfolioFixture;
-    private ApplicationRepository $applicationRepository;
+    private ApplicationFixture $applicationFixture;
+
     private ORMExecutor $executor;
 
-
+    private ApplicationRepository $applicationRepository;
     protected function setUp(): void
     {
         $kernel = self::bootKernel();
@@ -38,33 +37,20 @@ class ApplicationRepositoryTest extends KernelTestCase
         $this->assertInstanceOf(EntityManager::class, $em);
 
         $loader = new Loader();
-        //$passwordHasher = $kernel->getContainer()->get(PasswordHasherInterface::class);
-        //$this->assertInstanceOf(PasswordHasherInterface::class, $passwordHasher);
-
         $loader->addFixture($this->stockFixture = new StockFixture());
-        $loader->addFixture($this->portfolioFixture = new PortfolioFixture());
         $loader->addFixture($this->userFixture = new UserFixture());
+        $loader->addFixture($this->portfolioFixture = new PortfolioFixture());
         $loader->addFixture($this->applicationFixture = new ApplicationFixture());
-
-
 
         $this->executor = new ORMExecutor($em, new ORMPurger());
         $this->executor->execute($loader->getFixtures());
 
-
         $this->applicationRepository = $em->getRepository(Application::class);
     }
 
-    private function getAppropriateApplication(): Application
+    protected function tearDown(): void
     {
-        $application = new Application();
-        $application->setPrice(1);
-        $application->setQuantity(1);
-        $application->setAction(ActionEnum::BUY);
-        $application->setPortfolio($this->portfolioFixture->getReference(PortfolioFixture::PORTFOLIO_USER_REFERENCE, Portfolio::class));
-        $application->setStock($this->stockFixture->getReference(StockFixture::TEST_STOCK_REFERENCE, Stock::class));
-
-        return $application;
+        $this->executor->getPurger()->purge();
     }
 
     public function testFindAppropriate(): void
@@ -118,7 +104,7 @@ class ApplicationRepositoryTest extends KernelTestCase
     public function testFindAppropriateDifferentStock(): void
     {
         $application = $this->getAppropriateApplication();
-        $application->setStock($this->stockFixture->getReference(StockFixture::ANOTHER_STOCK_REFERENCE, Stock::class));
+        $application->setStock($this->stockFixture->getReference(StockFixture::STOCK_ANOTHER_REFERENCE, Stock::class));
 
         $nonAppropriateApplication = $this->applicationRepository->findAppropriate($application);
         $this->assertNull($nonAppropriateApplication);
@@ -136,9 +122,15 @@ class ApplicationRepositoryTest extends KernelTestCase
         );
     }
 
-    protected function tearDown(): void
+    private function getAppropriateApplication(): Application
     {
-        $this->executor->purge();
-        parent::tearDown();
+        $application = new Application();
+        $application->setPrice(1);
+        $application->setQuantity(1);
+        $application->setAction(ActionEnum::BUY);
+        $application->setPortfolio($this->portfolioFixture->getReference(PortfolioFixture::PORTFOLIO_USER_REFERENCE, Portfolio::class));
+        $application->setStock($this->stockFixture->getReference(StockFixture::STOCK_TEST_REFERENCE, Stock::class));
+
+        return $application;
     }
 }
