@@ -8,7 +8,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class   PortfolioFixture extends AbstractFixture implements DependentFixtureInterface
+class PortfolioFixture extends AbstractFixture implements DependentFixtureInterface
 {
     public const PORTFOLIO_ADMIN_REFERENCE = 'portfolio-admin';
     public const PORTFOLIO_USER_REFERENCE = 'portfolio-user';
