@@ -143,6 +143,7 @@ class DealLogServiceTest extends TestCase
         $this->assertEquals(250.0, $delta);
     }
 
+    // TODO: Add data
     public function testCalculateDeltaWithNoLatestDealLog(): void
     {
         $stock = $this->createMock(Stock::class);

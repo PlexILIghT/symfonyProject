@@ -41,6 +41,8 @@ class FreezeServiceTest extends TestCase
             ->with(10);
 
         $this->freezeService->freezeByApplication($application);
+
+        // +freezeQuantity 10
     }
 
     public function testFreezeBuyApplication(): void

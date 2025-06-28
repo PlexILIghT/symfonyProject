@@ -1,6 +1,5 @@
 <?php
 
-// tests/Repository/UserRepositoryTest.php
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Tests\Fixture\UserFixture;

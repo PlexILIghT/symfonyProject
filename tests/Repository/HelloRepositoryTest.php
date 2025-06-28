@@ -1,6 +1,5 @@
 <?php
 
-// tests/Repository/HelloRepositoryTest.php
 use App\Entity\Hello;
 use App\Repository\HelloRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

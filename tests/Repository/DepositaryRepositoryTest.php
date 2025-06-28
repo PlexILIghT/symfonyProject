@@ -1,6 +1,5 @@
 <?php
 
-// tests/Repository/DepositaryRepositoryTest.php
 use App\Entity\Depositary;
 use App\Entity\User;
 use App\Repository\DepositaryRepository;
